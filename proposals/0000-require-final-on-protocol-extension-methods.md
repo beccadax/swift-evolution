@@ -20,8 +20,8 @@ code.
 ## Motivation
 
 In Swift 2, a protocol extension can either provide a default 
-implementation for a member defined in the protocol, or provide a new 
-method which is not listed in the original protocol at all.
+implementation for a member defined in the protocol, or define a new 
+member which is not listed in the original protocol at all.
 
 	protocol Turnable {
 		func turning() -> Self
@@ -45,12 +45,12 @@ method which is not listed in the original protocol at all.
 		}
 	}
 
-A conforming type *must* provide implementations of any member listed in
+A conforming type *must* provide implementations of members listed in
 the protocol which are not defined in any extension. They *may* provide 
 implementations of members which have default values; in that case, the 
 type's implementation silently overrides the protocol extension's. The 
-type may also silently non-default extension methods, that is, ones 
-which are not listed in the original protocol...but there's a catch.
+type may also shadow other extension methods, that is, ones which are 
+not listed in the original protocol...but there's a catch.
 
 	class SpimsterWicket: Turnable {
 		var turns: Int = 0
@@ -93,9 +93,8 @@ semantics.
 
 ## Proposed solution
 
-I do not propose that we change the dispatch semantics. Rather, I propose
-we make this behavior more obvious to language users in two separate, 
-but interlocking, ways.
+I propose we make this behavior more obvious to language users in two 
+separate, but interlocking, ways.
 
 The first is that any member which is in a protocol extension but not in 
 the protocol itself—that is, any member which does not participate in 
