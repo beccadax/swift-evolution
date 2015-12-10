@@ -212,5 +212,21 @@ overridable methods is not a bad option.
 
 ### Only mark statically-dispatched extension members; don't mark conflicting conformances.
 
+The problem with this approach is that the conflict is the surprising 
+part. It doesn't matter all that much whether protocol extension members 
+are dispatched statically or dynamically *except* if there's a conflict;
+*then* you're getting into potential bug territory. The `@incoherent` 
+keyword is what makes this mistake impossible to make accidentally; 
+without it, this is merely a proposal to force people to annotate their 
+protocol extensions more clearly.
+
 ### Only mark conflicting conformances; don't mark statically-dispatched extension members.
 
+Without the `final` keyword (or the `default` alternative mentioned 
+above) on the extension members themselves, it's impossible to tell at 
+a glance which members are overridable and which ones aren't. This makes
+predicting incoherent conformance errors an exercise in trial-and-error,
+or at least in visual-diffing two separate parts of the code to figure 
+out what's going on. Without the `final` keyword, in other words, 
+avoiding conflicts when you write your code instead of discovering them 
+when you compile it is much more difficult.
