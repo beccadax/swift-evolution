@@ -212,7 +212,7 @@ more or less information in the attribute's parameters. For instance:
 Failing to put a `final` keyword on a protocol extension member which
 requires it should emit an error message along these lines:
 
-> f must be final because it is not a requirement of P.
+    f must be final because it is not a requirement of P.
 
 This error should include a fix-it which adds the `final` keyword.
 
@@ -221,7 +221,7 @@ nonsensical—it essentially gives the member the semantics of a
 protocol extension member. We should emit an error message along these
 lines:
 
-> f cannot be final because it is a requirement of P.
+    f cannot be final because it is a requirement of P.
 
 This error should include a fix-it which removes the `final` keyword.
 
@@ -235,34 +235,34 @@ of them needs a slightly different wording. Here's what I propose:
    (that is, the declaration with the `: P` clause) should be marked
    with an error like:
 
-	T cannot conform to P because T.f conflicts with final member P.f.
+       T cannot conform to P because T.f conflicts with final member P.f.
 	
 2. **Type `T` is conformed to protocols `P` and `Q`, which both have a
    final member `f`.** The declaration of one of the conformances
    should be marked with an error like:
 
-	T cannot conform to both P and Q because final member P.f conflicts with final member Q.f.
+       T cannot conform to both P and Q because final member P.f conflicts with final member Q.f.
 
 3. **Type `T` is extended to add a member `f` in a file where `T`'s
    conformance to `P` is imported from another module, and `P` has a
    final member `f`.** The declaration of the concrete type extension
    should be marked with an error like:
 
-	T cannot be extended to add member f because it conflicts with final member P.f.
+       T cannot be extended to add member f because it conflicts with final member P.f.
 
 4. **Protocol `P` is extended to add final member `f` in a file where
    `T`'s conformance to `P`, and the declaration of `T.f`, are both
    imported from other modules.** The declaration of the protocol
    extension should be marked with an error like:
 
-	P cannot be extended to add final member f because it conflicts with member T.f of a conforming type.
+       P cannot be extended to add final member f because it conflicts with member T.f of a conforming type.
 	
 5. **A source file imports module A, which extends protocol `P` to
    include final member `f`, and module B, which conforms type `T` with
    member `f` to conform to `P`.** The later of the two imports should
    be marked with an error like:
 
-	B cannot be imported because final member P.f conflicts with A's T.f.
+       B cannot be imported because final member P.f conflicts with A's T.f.
 
 The preferred means of resolving a conflict include:
 
