@@ -104,11 +104,11 @@ might produce different behavior.
 
 I propose that we:
 
-1. Cause Swift to emit an error when it detects this sort of shadowing.
+1. Cause Swift to emit an error when it detects this sort of conflict.
 2. Add a mandatory `final` keyword to statically-dispatched protocol 
    extension members, to give a textual indication that these errors will
    occur.
-3. For those circumstances in which this shadowing is a necessary evil,
+3. For those circumstances in which this conflict is a necessary evil,
    provide an attribute which can be applied to indicate that conflicts 
    are allowed when caused by a particular conformance.
 
