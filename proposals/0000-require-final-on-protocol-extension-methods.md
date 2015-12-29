@@ -375,3 +375,19 @@ or at least in visual-diffing two separate parts of the code to figure
 out what's going on. Without the `final` keyword, in other words, 
 avoiding conflicts when you write your code instead of discovering them 
 when you compile it is much more difficult.
+
+### Mark specific conflicting members
+
+Rather than marking an entire conformance as permitted to allow 
+conflicts, we could force users to mark specific conflicting members.
+For instance, in the `Turnable`/`SpimsterWicket` example used above,
+`turningRepeatedly(_:)` itself would have to be marked in some way.
+
+The main issue I see is that, in many cases, a conformance is added in 
+a different file or even module than the conflicting declaration, so 
+there's no convenient place to put the attribute. This is basically the
+same reason there's no equivalent of `override` for implementations of
+protocol methods.
+
+This would also require more declarations, but I don't necessarily 
+think that would be a bad thing.
