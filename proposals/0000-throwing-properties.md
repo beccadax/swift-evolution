@@ -249,7 +249,7 @@ These transformations should be applied to both classes and `@objc` protocols.
 ### Subscripts with `rethrows`
 
 `rethrows` is not supported on properties, but it is supported on 
-subscripts. The rethrowing behavior depends only on the subscript's  
+subscripts. The rethrowing behavior depends only on the subscript's 
 parameters, not the setter's `newValue`; that is, a particular 
 subscript access can throw iff at least one of the functions inside the 
 square brackets can throw.
