@@ -420,7 +420,7 @@ struct ResourceValues {
 	func set(from dict: [String: AnyObject]) throws { ... }
 	
 	func removeCachedKeys() { ... }
-	func removeCachedKey(key: String) { ... }
+	func removeCachedKey(_ key: String) { ... }
 	func setTemporaryValue(_ value: AnyObject?, for key: String) { ... }
 }
 ```
