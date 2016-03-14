@@ -288,18 +288,20 @@ the expected level of throwing behavior; omitting the keyword means the
 accessor is non-throwing. That is, in this example, `Subclass.foo`'s
 setter is not automatically `throws`:
 
-	class Superclass {
-		var foo: Int {
-			willSet throws { ... }
-		}
+```swift
+class Superclass {
+	var foo: Int {
+		willSet throws { ... }
 	}
-	
-	class Subclass: Superclass {
-		override var foo: Int {
-			set { try super.foo = newValue }
-			// Error: nonthrowing setter includes throwing statement
-		}
+}
+
+class Subclass: Superclass {
+	override var foo: Int {
+		set { try super.foo = newValue }
+		// Error: nonthrowing setter includes throwing statement
 	}
+}
+```
 
 ### Implementation
 
@@ -356,12 +358,16 @@ cited, however, `didSet throws` could be added.
 As specified, if `foo` has a throwing accessor and you want to pass it 
 to a function `bar` with an inout parameter, you have to write this:
 
-	try bar(&foo)
+```swift
+try bar(&foo)
+```
 
 In theory, we could instead allow you to mark only the `&` operator, 
 leaving the rest of the expression uncovered by the `try`:
 
-	bar(try &foo)
+```swift
+bar(try &foo)
+```
 
 This would make the source of the potential error more obvious, but it 
 might make the semantics less clear, because `try &foo` can throw 
