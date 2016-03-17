@@ -312,6 +312,9 @@ specifying explicitly. Sorry. Please help me fill this out.
 
 #### Grammar changes
 
+(This section is based on *The Swift Programming Language*'s grammar 
+summary, not anything in the compiler source code.)
+
 Grammar productions related to the `get`, `set`, and `willSet` accessors:
 
 > getter-clause -> *attributes(opt)* **get** *code-block*
@@ -342,9 +345,6 @@ keyword:
 `rethrows` would not be valid inside a property declaration, only a 
 subscript declaration, but I think that discovering that issue during 
 parsing would be too difficult.
-
-(This grammar is based on *The Swift Programming Language*'s grammar 
-summary, not anything in the compiler source code.)
 
 #### Generated accessors
 
