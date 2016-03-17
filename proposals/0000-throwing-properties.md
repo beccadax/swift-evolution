@@ -260,9 +260,11 @@ A throwing property or subscript access can be passed as an `inout`
 parameter. The call it is passed to must be marked with the `try` 
 keyword.
 
-To avoid unpredictable interactions between `inout` and throwing 
-accessors, Swift will guarantee the getter is invoked once before the 
-call and the setter once after the call. The compiler will not apply 
+To the call with the `inout` parameter, a throwing property or 
+subscript is indistinguishable from a non-throwing one. To avoid 
+unpredictable interactions between `inout` and throwing accessors, 
+Swift will guarantee the getter is invoked once before the call and the 
+setter zero or one times after the call. The compiler will not apply 
 optimizations which might cause errors to be thrown in the middle of 
 the function.
 
