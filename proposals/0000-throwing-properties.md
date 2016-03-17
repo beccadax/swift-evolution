@@ -13,7 +13,7 @@ cannot. This proposal extends properties and subscripts to support
 `throws` and `rethrows` accessors, and also specifies logic for 
 bridging these accessors to and from Objective-C.
 
-Swift-evolution thread: [Proposal: Allow Getters and Setters to Throw](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20151207/001165.html)
+Swift-evolution threads: [Proposal: Allow Getters and Setters to Throw](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20151207/001165.html), [[Draft] Throwing Properties and Subscripts](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20160314/012602.html)
 
 ## Motivation
 
