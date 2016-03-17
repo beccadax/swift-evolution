@@ -486,3 +486,33 @@ rarely-used but necessary `nonmutating` keyword.
 I have chosen not to do this because Swift generally does not allow you 
 to infer parts of a member's signature, and because I cannot come up 
 with a way to spell this keyword that isn't ugly as sin.
+
+### Put commas in protocol accessor declarations
+
+The list of accessors for properties and subscripts, used in protocol 
+declarations and generated interfaces (and probably abstract classes if 
+they're added later), can be a little confusing to read:
+
+```swift
+var property: Int { get throws set throws }
+subscript(index: Int) -> Bool { get throws set throws }
+```
+
+They get even worse with `mutating` keywords, and would probably become 
+unmanageable if other keywords were added:
+
+```swift
+var property: Int { mutating get throws nonmutating set throws }
+```
+
+Someone suggested privately that we put a comma between each accessor 
+to help delimit them:
+
+```swift
+var property: Int { mutating get throws, nonmutating set throws }
+```
+
+While I agree that this is an issue, and I like this solution, this 
+change should be applied to all accessor lists, not just ones with 
+throwing accessors. Therefore I believe it should be proposed 
+separately.
