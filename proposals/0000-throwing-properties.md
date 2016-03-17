@@ -352,8 +352,9 @@ Swift uses a series of special implementation detail accessors to
 optimize property access. Most notably, the compiler synthesizes a 
 `materializeForSet` accessor, which allows code to modify a value 
 in-place instead of copying it, modifying it, and copying it back. 
-Swift also offers a number of compiler-private accessors like 
-`unsafeAddressor` to optimize access to certain properties.
+Swift also has a number of compiler-private accessors like 
+`unsafeAddressor` to provide faster access to certain variables 
+and subscripts.
 
 It is expected that throwing accessors, and particularly throwing 
 setters, will often prevent the use of these optimizations. This will 
