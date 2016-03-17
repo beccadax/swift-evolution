@@ -47,9 +47,9 @@ var avatar: UIImage {
 ```
 
 The current best solution to this problem is to write a method instead 
-of a property. This can lead to unnatural API designs; the class
-`AVAudioSession` alone, for instance, has no less than ten mismatched 
-property/setter method pairs:
+of a property. This can lead to unnatural API designs; one extreme 
+example from the frameworks, `AVAudioSession`, has no less than ten 
+mismatched property/setter method pairs:
 
 ```swift
 var category: String { get }
