@@ -359,6 +359,100 @@ cases.
 
 ## Alternatives considered
 
+### Omit throwing getters on properties
+
+Joe Groff argued against including throwing getters. He suggested that 
+[properties with throwing getters might be better modeled as methods](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20160314/012616.html), 
+noting that "[t]he standard library doesn't even use property syntax 
+for things that might unconditionally fail due to programmer error."
+
+I disagree with him on several grounds:
+
+* If you represent throwing getters as methods, the only way to 
+  associate a setter with the `foo` method is to write a `setFoo` 
+  method. I find `setFoo` methods distasteful—a major purpose of this 
+  proposal is to eliminate a class of them—so I see that as a step 
+  backwards.
+
+* I believe some of the use cases for throwing getters are indeed 
+  compelling. For instance:
+	
+  * When an instance is backed by an external resource, such as a 
+    database record, the most natural representation of the fields in 
+    that record is a property. However, if there is some sort of I/O or 
+    other error in the underlying layers, that error will need to be 
+		communicated to the caller. A property with a throwing getter is the 
+		most natural way to represent this situation.
+		
+  * When a protocol requires a piece of data which could reasonably be 
+	  either stored or computed, and the computation might discover an 
+		error which would need to be communicated to the caller, a throwing 
+		getter is the most convenient solution. Without throwing getters, you 
+		would be forced to represent the data as either a non-throwing getter 
+		(which would make it impossible to signal errors) or a throwing 
+		method (which would inconvenience conforming types which use a stored 
+		property). A concrete example:
+		
+		```swift
+		protocol JSONRepresentable {
+			var json: JSONValue { get throws }
+		}
+		```
+  
+* Even if the use cases for properties are not strong enough, I believe 
+  the use cases for subscripts are. For instance, an XMLNode type with 
+  a subscript which took an XPath query would need to be able to throw 
+  if the query was syntactically invalid. It would be strange to 
+  support throwing accessors on subscripts but not properties.
+  
+  (Similarly, if we eventually support lvalue functions, they will 
+  presumably be able to throw.)
+  
+* If we omit throwing getters in an attempt to get people to represent 
+  those operations as functions, many users will not respond to this 
+  incentive as hoped. Instead, they will substitute less appropriate 
+  error handling mechanisms, such as preconditions, encoding the error 
+  in the getter's return value (by returning a `Result`, `Optional`, 
+  `ImplicitlyUnwrappedOptional`, or sentinel value), or abusing C++ or 
+  Objective-C exceptions. Each of these would undermine at least one of 
+  Swift's goals to make error handling safe, explicit, checkable, and 
+  convenient.
+  
+* I believe there is value in ensuring that all entities which can run 
+  arbitrary code can be made to throw. As one example among many, this 
+  might make it possible to add a sort of "generic rethrowing" facility 
+  which would allow you to make a throwing subtype of a normally 
+  non-throwing protocol. See the "Future directions" section for 
+  details.
+  
+* Ultimately, this objection is based in an opinion about where to draw 
+  the already ill-defined line between computed properties and methods. 
+  There is no implementation problem here; nor is the feature confusing, 
+  hard to explain, or misleading. It is merely a question of when you 
+  should use this feature instead of a similar one.
+  
+  That means it's basically a matter of style. Although Swift is an 
+  opinionated language in many ways, in matters of pure style it 
+  generally errs on the side of permitting developers to make their own 
+  choices. (See, for instance, [the require `self` proposal](https://github.com/apple/swift-evolution/blob/master/proposals/0009-require-self-for-accessing-instance-members.md), 
+  the [thread about removing semicolons](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20151214/002421.html), 
+  and [the thread about removing `default`](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20151207/001422.html).)
+  Some developers will not want to use throwing getters, but others 
+  will. Let's allow everyone to write their code in whatever way they 
+  think will best express their intent.
+
+Joe also thought that permitting getters to throw might complicate a 
+future lens feature (functions that can be used to read or write a 
+particular property on an instance passed to it). If it needed to model 
+all of the details of the accessors' throwing behavior, that might 
+complicate the feature. Upon discussion, we agreed that such a feature 
+could make both getting and setting throw if either of the underlying 
+accessors threw.
+
+While throwing getters are very closely connected to throwing setters, 
+they are ultimately severable and could be proposed separately if 
+they're highly controversial.
+
 ### Require setters to be at least as throwing as getters
 
 Calling a setter often implicitly involves calling a getter, so it may 
@@ -540,3 +634,90 @@ share invariants, so it may be less valuable there.
 
 This was omitted from the current proposal as both a wholly severable 
 enhancement and pure, tooth-decay-inducing syntactic sugar.
+
+### Generic rethrowing
+
+One downside of Swift's use of [typed error propagation](https://github.com/apple/swift/blob/master/docs/ErrorHandlingRationale.rst#id46) 
+is that, if (for instance) a protocol requirement doesn't normally need 
+to throw but some particular conforming type is implemented in such a 
+way that all of its members can throw errors, there is no way for that 
+type to conform.
+
+For example, consider a database library's `PreparedQuery` type. This 
+type is, in most respects, a shoe-in for `SequenceType` conformance, 
+which would allow you to loop over the records matching the query. 
+However, unlike other `SequenceType`s, any of `PreparedQuery`'s 
+operations might throw an error: the process may lose its connection to 
+the database server. It doesn't make sense to change `SequenceType` so 
+that its requirements are marked as `throws`—the vast majority of 
+`SequenceType`s never throw, so it would be burdensome to always permit 
+throwing just for the very few types which need it—but it's also 
+unfortunate that types which need to throw are locked out.
+
+This problem could be solved with a mechanism that allowed a particular 
+conforming type to say that *all* of the requirements of the protocol 
+can throw. With throwing getters and setters in place, all members of a 
+type would be able to be declared `throws`, which enables this solution.
+
+To give you an idea of what I'm talking about, here's a brief sketch of 
+a possible design:
+
+* Protocols can opt in to participating in this "all members might 
+  actually throw for some types" semantic:
+  
+  ```swift
+  // The `rethrows` keyword indicates that some conforming types may 
+  // make all members throw.
+  protocol GeneratorType rethrows {
+    associatedtype Element
+    // There is no explicit indication on the individual members.
+    mutating func next() -> Element?
+  }
+  protocol SequenceType rethrows {
+    // Without a `rethrows` here, all SequenceType.Generators would 
+    // have to be non-throwing.
+    associatedtype Generator: GeneratorType rethrows
+    // Other members omitted; you get the idea.
+  }
+  ```
+
+* A conforming type which wants to throw marks its conformance:
+  
+  ```swift
+  class PreparedQuery: SequenceType throws {
+    // In a concrete type with a throwing conformance, the members 
+    // are explicitly marked as `throws`.
+    func generate() throws -> ResultGenerator {
+      return try ResultGenerator(query: self)
+    }
+  }
+  ```
+
+* Code which uses a known-throwing concrete type, or which uses 
+  protocol types opted in with a `rethrows` keyword, must mark possibly 
+  throwing operations with some form of `try`.
+  
+  ```swift
+  let query = database.makeQuery("SELECT name FROM users")
+  let names = try query.map { record in try record["name"]! }
+  
+  func names<Records: SequenceType rethrows where Records.Generator.Element == Record>
+    (from records: Records) throws -> [String] {
+    return records.map { record in try record["name"]! }
+  }
+  ```
+
+* The `rethrows` keyword on a function now takes into account not only 
+  throwing closure parameters, but also types which have, or may have, 
+  throwing conformances.
+  
+  ```swift
+  func countElements<Sequence: SequenceType rethrows>(_ seq: Sequence) rethrows -> Int {
+      return try seq.reduce(0) { $0 + 1 }
+  }
+  ```
+
+There are several possible designs in this space, so any proposal along 
+these lines might differ in its details, but I hope you understand what 
+I'm getting at here.
+    
