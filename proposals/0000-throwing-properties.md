@@ -385,6 +385,8 @@ The use of `willSet throws` to make a stored property throwing is a bit
 funky and could be omitted. I decided to include it because, if it does 
 not exist, people will fake it with private properties anyway.
 
+This feature is severable and could be proposed separately.
+
 ### Include `didSet throws`
 
 There is no technical reason not to support `didSet throws` accessors, 
