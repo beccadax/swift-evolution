@@ -346,10 +346,73 @@ keyword:
 subscript declaration, but I think that discovering that issue during 
 parsing would be too difficult.
 
-#### Generated accessors
+#### Private use accessors and optimization
 
-The internal `materializeForSet` is as throwing as the "most" throwing 
-of `get` and `set`.
+Swift uses a series of special implementation detail accessors to 
+optimize property access. Most notably, the compiler synthesizes a 
+`materializeForSet` accessor, which allows code to modify a value 
+in-place instead of copying it, modifying it, and copying it back. 
+Swift also offers a number of compiler-private accessors like 
+`unsafeAddressor` to allow developers (mainly standard library 
+developers) to optimize access to certain properties.
+
+It is expected that throwing accessors, and particularly throwing 
+setters, will often prevent the use of these optimizations. This will 
+make them slower than non-throwing accessors, but will also make this 
+proposal simpler to implement, as the various private use accessors 
+Swift uses to optimize things won't need to support throwing 
+immediately, if ever.
+
+However, the compiler (for automatically generated accessors like 
+`materializeForSet`) or the developer (for manual ones like 
+`unsafeAddressor`) *is* permitted to use these private use accessors 
+as long as the semantics when they are used match those when the plain, 
+boring `get` and `set` accessors are used. For instance, consider a 
+subscript which can throw, but the setter can only throw in situations 
+where the getter would already have done so:
+
+    struct ThrowingRepeat<Element> {
+        var element: Element
+        let count: Int
+        
+        private func validateIndex(_ i: Int) throws {
+            guard i < count else {
+                throw ThrowingRepeat.Error.SubscriptOutOfRange
+            }
+        }
+        
+        subscript (i: Int) -> Element {
+            get throws {
+                try validateIndex(i)
+                return element
+            }
+            set throws {
+                try validateIndex(i)
+                element = newValue
+            }
+        }
+    }
+
+Because the setter can only throw under the exact same conditions as 
+the getter (and those conditions won't change—`i` and `count` are 
+both constant), the compiler can write a `materializeForSet`, or the 
+developer can write an `unsafeMutableAddressor`, which allows `element` 
+to be modified directly.
+
+Moreover, these optimizing accessors are permitted to cheat slightly by 
+moving error checks from after the rvalue's calculation to before it, 
+as long as the compiler or developer is certain that those checks would 
+have failed if performed afterwards. For instance, imagine if the above 
+`subscript` had only called `validateIndex(_:)` in its setter. The 
+compiler could write a `materializeForSet`, or the developer could 
+write an `unsafeMutableAddressor`, which called `validateIndex(_:)`, 
+even though this would cause the error check to be performed at the 
+point where the code got the old value rather than at the point where 
+it set the new value, thus throwing before the rvalue was evaluated 
+instead of after.
+
+(For a variety of reasons, these rules are unlikely to come into play 
+in practice, but I felt it was important to define them explicitly.)
 
 ## Impact on existing code
 
