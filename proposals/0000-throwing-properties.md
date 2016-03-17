@@ -307,11 +307,49 @@ class Subclass: Superclass {
 
 ### Implementation
 
+**FIXME**: There are probably more implementation details worth 
+specifying explicitly. Sorry. Please help me fill this out.
+
+#### Grammar changes
+
+Grammar productions related to the `get`, `set`, and `willSet` accessors:
+
+> getter-clause -> *attributes(opt)* **get** *code-block*
+> 
+>‌ setter-clause -> *attributes(opt)* **set** *setter-name(opt)* *code-block*
+>
+> willSet-clause -> *attributes(opt)* **willSet** *setter-name(opt)* *code-block*
+> 
+> getter-keyword-clause -> *attributes(opt)* **get**
+>
+>‌ setter-keyword-clause -> *attributes(opt)* **set**
+
+Will need to be changed to accommodate a `throws` or `rethrows` 
+keyword:
+
+> accessor-throwing-keyword -> **throws** | **rethrows**
+> 
+> getter-clause -> *attributes(opt)* **get** *accessor-throwing-keyword(opt)* *code-block*
+> 
+>‌ setter-clause -> *attributes(opt)* **set** *setter-name(opt)* *accessor-throwing-keyword(opt)* *code-block*
+>
+> willSet-clause -> *attributes(opt)* **willSet** *setter-name(opt)* *accessor-throwing-keyword(opt)* *code-block*
+> 
+> getter-keyword-clause -> *attributes(opt)* **get** *accessor-throwing-keyword(opt)*
+>
+>‌ setter-keyword-clause -> *attributes(opt)* **set** *accessor-throwing-keyword(opt)*
+
+`rethrows` would not be valid inside a property declaration, only a 
+subscript declaration, but I think that discovering that issue during 
+parsing would be too difficult.
+
+(This grammar is based on *The Swift Programming Language*'s grammar 
+summary, not anything in the compiler source code.)
+
+#### Generated accessors
+
 The internal `materializeForSet` is as throwing as the "most" throwing 
 of `get` and `set`.
-
-**FIXME**: Beyond that, I have no idea. Sorry. Please help me fill this 
-out.
 
 ## Impact on existing code
 
