@@ -516,3 +516,27 @@ While I agree that this is an issue, and I like this solution, this
 change should be applied to all accessor lists, not just ones with 
 throwing accessors. Therefore I believe it should be proposed 
 separately.
+
+## Future directions
+
+### Shorthand syntax
+
+It might be helpful to offer a way to declare that both accessors 
+throw:
+
+```swift
+var property throws: Int { get { ... } set { ... } }
+subscript(index: Int) throws -> Bool { get { ... } set { ... } }
+```
+
+This is especially compelling for `subscript`, where both accessors may 
+use the parameters in similar error-throwing ways.
+
+One challenge is that there's no good place to put `throws` in a 
+property declaration. Putting it before the colon looks strange, but 
+putting it anywhere else is inconsistent with other uses of `throws`. 
+On the other hand, property getters and setters are less likely to 
+share invariants, so it may be less valuable there.
+
+This was omitted from the current proposal as both a wholly severable 
+enhancement and pure, tooth-decay-inducing syntactic sugar.
