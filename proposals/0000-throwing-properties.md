@@ -2,7 +2,7 @@
 
 * Proposal: [SE-NNNN](https://github.com/apple/swift-evolution/blob/master/proposals/NNNN-name.md)
 * Author(s): [Brent Royal-Gordon](https://github.com/brentdax)
-* Status: **Draft**
+* Status: **Awaiting review**
 * Review manager: TBD
 
 ## Introduction
