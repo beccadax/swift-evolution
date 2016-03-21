@@ -15,52 +15,6 @@ bridging these accessors to and from Objective-C.
 
 Swift-evolution threads: [Proposal: Allow Getters and Setters to Throw](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20151207/001165.html), [[Draft] Throwing Properties and Subscripts](https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20160314/012602.html)
 
-## Drafting notes
-
-This proposal is still being drafted.
-
-### Recent changes
-
-* Added discussion of several pieces of feedback to "Alternatives 
-  considered" and "Future directions", including:
-  
-  * Commas in the protocol requirement keyword list.
-  
-  * A shorthand syntax for cases where both accessors throw.
-  
-  * The possibility of omitting throwing getters. This includes an 
-    extensive example in "Future directions" of a language feature 
-    which might be enabled by supporting throwing getters.
-
-* Specified grammar changes and vastly expanded discussion of 
-  compiler-internal accessors.
-
-* Clarified inout semantics slightly.
-
-* Various minor wording changes.
-
-### Feedback needed
-
-* The Implementation section could probably use detail on other 
-  implementation issues, and could certainly use a look from someone 
-  who knows the compiler's guts a lot better than I do. (I'm not even 
-  sure it should be there at all.)
-
-* Several parts of this proposal are, at least in principle, severable; 
-  I would appreciate feedback on which of these, if any, should be left 
-  for future proposals. Candidates include (roughly in order from 
-  things I'd be happiest removing to things I'd be least happy 
-  removing):
-
-  1. `rethrows` support
-  2. Throwing setters on stored properties with `willSet throws`
-  3. Objective-C interop
-  4. Throwing getters
-  
-  Shorthand syntax (e.g. `subscript(i: Int) throws -> Element`) has 
-  already been subsetted out, mainly because I don't have a satisfying 
-  design for it on properties.
-
 ## Motivation
 
 Sometimes, something that is genuinely getter- or setter-like needs to 
