@@ -25,7 +25,8 @@ to return the data:
 ```swift
 var avatar: UIImage {
     get {
-        guard image = UIImage(contentsOfFile: avatarURL) else {
+        let data = /* can't */ try NSData(contentsOfURL: avatarURL)
+        guard image = UIImage(data: data) else {
             /* can't */ throw MyError.InvalidImage
         }
         return image
