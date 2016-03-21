@@ -200,21 +200,6 @@ protocol MyProtocol {
 }
 ```
 
-### Throwing stored properties
-
-A stored property can also be given a throwing setter by giving it a 
-`willSet` accessor that throws:
-
-```swift
-var property: Int {
-	willSet throws {
-		guard newValue >= 0 else {
-			throw MyError.PropertyOutOfRange (newValue)
-		}
-	}
-}
-```
-
 ### Importing throwing property accessors from Objective-C
 
 When a readonly property `foo` of type `T` is imported from Objective-C,
@@ -575,22 +560,6 @@ can't imagine a case where this would be appropriate behavior, and
 considering only the subscript parameters makes the getter and setter 
 work better together.
 
-### Don't include `willSet throws`
-
-The use of `willSet throws` to make a stored property throwing is a bit
-funky and could be omitted. I decided to include it because, if it does 
-not exist, people will fake it with private properties anyway.
-
-This feature is severable and could be proposed separately.
-
-### Include `didSet throws`
-
-There is no technical reason not to support `didSet throws` accessors, 
-which would allow stored properties to be made throwing. However, this 
-would usually be the wrong thing to do because it would leave the 
-errant value in the property. If compelling use cases for it were 
-cited, however, `didSet throws` could be added.
-
 ### Permit `try` on `&foo` itself, rather than the call using it
 
 As specified, if `foo` has a throwing accessor and you want to pass it 
@@ -736,6 +705,39 @@ share invariants, so it may be less valuable there.
 
 This was omitted from the current proposal as both a wholly severable 
 enhancement and pure, tooth-decay-inducing syntactic sugar.
+
+### `willSet throws`
+
+Under this proposal, only computed accessors can throw. If you want to 
+make a stored property with a throwing accessor, you must wrap it in a 
+computed property:
+
+    var _url: NSURL
+    var url: NSURL {
+        get { return _url }
+        set throws {
+            try newValue.checkResourceIsReachable()
+            _url = newValue
+        }
+    }
+
+This boilerplate could be avoided by allowing you to specify a throwing 
+`willSet` observer. The presence of a `willSet throws` observer would 
+imply that the setter itself is `throws`.
+
+    var url: NSURL {
+        willSet throws {
+          try newValue.checkResourceIsReachable()
+        }
+    }
+
+Additionally, `didSet` could support this feature, though that would be 
+mistake-prone since the assignment would have already been performed.
+
+I believe `willSet throws` is a clean and useful extension to throwing 
+accessors and should be included in Swift. However, it is fully 
+severable from the main proposal, so I have subsetted it out to reduce 
+the complexity of this proposal.
 
 ### Generic rethrowing
 
