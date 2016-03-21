@@ -27,7 +27,7 @@ var avatar: UIImage {
     get {
         let data = /* can't */ try NSData(contentsOfURL: avatarURL)
         guard image = UIImage(data: data) else {
-            /* can't */ throw MyError.InvalidImage
+            /* can't */ throw UserError.corruptedImage
         }
         return image
     }
@@ -46,10 +46,10 @@ var json: [String: JSONValue] {
     }
     set {
         guard let newUsername = newValue["username"] as? String else {
-            /* can't */ throw MyError.InvalidUserField("username")
+            /* can't */ throw UserError.invalidUserField("username")
         }
         guard let newPostsJSON = newValue["posts"] as? [Post.JSONRepresentation] else {
-            /* can't */ throw MyError.InvalidUserField("posts")
+            /* can't */ throw UserError.invalidUserField("posts")
         }
         
         posts = /* can't */ try newPostsJSON.map { Post(json: $0) }
