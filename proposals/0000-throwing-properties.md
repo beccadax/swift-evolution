@@ -71,12 +71,12 @@ which convert between formats:
 var image: UIImage
 
 var imageData: NSData {
-	get {
-		return UIImagePNGRepresentation(image)
-	}
-	set {
-		image = UIImage(data: newValue) ?? throw OopsICantThrowHere
-	}
+    get {
+        return UIImagePNGRepresentation(image)
+    }
+    set {
+        image = UIImage(data: newValue) ?? throw OopsICantThrowHere
+    }
 }
 ```
 
@@ -85,10 +85,10 @@ the operation:
 
 ```swift
 var avatar: UIImage {
-	get {
-		let data = try NSData(contentsOfURL: avatarURL, options: [])	/* can't try here! */
-		return UIImage(data: data)
-	}
+    get {
+        let data = try NSData(contentsOfURL: avatarURL, options: [])  /* can't try here! */
+        return UIImage(data: data)
+    }
 }
 ```
 
@@ -164,13 +164,13 @@ You can mark a computed property accessor as throwing by putting
 
 ```swift
 var property: Int {
-	get throws { ... }
-	set throws { ... }
+    get throws { ... }
+    set throws { ... }
 }
 
 subscript(index: Int) -> Bool {
-	get throws { ... }
-	set throws { ... }
+    get throws { ... }
+    set throws { ... }
 }
 ```
 
@@ -180,13 +180,13 @@ setter, or vice versa.
 
 ```swift
 var property: Int {
-	get throws { ... }
-	set { ... }
+    get throws { ... }
+    set { ... }
 }
 
 subscript(index: Int) -> Bool {
-	get { ... }
-	set throws { ... }
+    get { ... }
+    set throws { ... }
 }
 ```
 
@@ -195,8 +195,8 @@ throwing behavior of properties and subscripts it requires:
 
 ```swift
 protocol MyProtocol {
-	var property: Int { get throws set throws }
-	subscript(index: Int) -> Bool { get throws set throws }
+    var property: Int { get throws set throws }
+    subscript(index: Int) -> Bool { get throws set throws }
 }
 ```
 
@@ -216,7 +216,7 @@ is accepted, we should also be able to apply the `swift_name` attribute
 to methods of these forms to create properties with throwing getters:
 
 ```objc
-- (nullable T)foo:(NSError**)error;		// property is not optional
+- (nullable T)foo:(NSError**)error;    // property is not optional
 - (BOOL)getFoo:(T*)outValue error:(NSError**)error;
 ```
 
@@ -323,16 +323,16 @@ setter is not automatically `throws`:
 
 ```swift
 class Superclass {
-	var foo: Int {
-		willSet throws { ... }
-	}
+    var foo: Int {
+        willSet throws { ... }
+    }
 }
 
 class Subclass: Superclass {
-	override var foo: Int {
-		set { try super.foo = newValue }
-		// Error: nonthrowing setter includes throwing statement
-	}
+    override var foo: Int {
+        set { try super.foo = newValue }
+        // Error: nonthrowing setter includes throwing statement
+    }
 }
 ```
 
@@ -398,27 +398,29 @@ are used. For instance, consider a subscript which can throw, but the
 setter can only throw in situations where the getter would already have 
 done so:
 
-    struct ThrowingRepeat<Element> {
-        var element: Element
-        let count: Int
-        
-        private func validateIndex(_ i: Int) throws {
-            guard i < count else {
-                throw ThrowingRepeat.Error.SubscriptOutOfRange
-            }
-        }
-        
-        subscript (i: Int) -> Element {
-            get throws {
-                try validateIndex(i)
-                return element
-            }
-            set throws {
-                try validateIndex(i)
-                element = newValue
-            }
+```swift
+struct ThrowingRepeat<Element> {
+    var element: Element
+    let count: Int
+    
+    private func validateIndex(_ i: Int) throws {
+        guard i < count else {
+            throw ThrowingRepeat.Error.SubscriptOutOfRange
         }
     }
+    
+    subscript (i: Int) -> Element {
+        get throws {
+            try validateIndex(i)
+            return element
+        }
+        set throws {
+            try validateIndex(i)
+            element = newValue
+        }
+    }
+}
+```
 
 Because the setter can only throw under the exact same conditions as 
 the getter (and those conditions won't change—`i` will be the same 
@@ -463,28 +465,28 @@ I disagree with him on several grounds:
 
 * I believe some of the use cases for throwing getters are indeed 
   compelling. For instance:
-	
+  
   * When an instance is backed by an external resource, such as a 
     database record, the most natural representation of the fields in 
     that record is a property. However, if there is some sort of I/O or 
     other error in the underlying layers, that error will need to be 
-		communicated to the caller. A property with a throwing getter is the 
-		most natural way to represent this situation.
-		
+    communicated to the caller. A property with a throwing getter is the 
+    most natural way to represent this situation.
+    
   * When a protocol requires a piece of data which could reasonably be 
-	  either stored or computed, and the computation might discover an 
-		error which would need to be communicated to the caller, a throwing 
-		getter is the most convenient solution. Without throwing getters, you 
-		would be forced to represent the data as either a non-throwing getter 
-		(which would make it impossible to signal errors) or a throwing 
-		method (which would inconvenience conforming types which use a stored 
-		property). A concrete example:
-		
-		```swift
-		protocol JSONRepresentable {
-			var json: JSONValue { get throws }
-		}
-		```
+    either stored or computed, and the computation might discover an 
+    error which would need to be communicated to the caller, a throwing 
+    getter is the most convenient solution. Without throwing getters, you 
+    would be forced to represent the data as either a non-throwing getter 
+    (which would make it impossible to signal errors) or a throwing 
+    method (which would inconvenience conforming types which use a stored 
+    property). A concrete example:
+    
+    ```swift
+    protocol JSONRepresentable {
+        var json: JSONValue { get throws }
+    }
+    ```
   
 * Even if the use cases for properties are not strong enough, I believe 
   the use cases for subscripts are. For instance, an XMLNode type with 
@@ -596,8 +598,8 @@ Could be imported like this:
 
 ```swift
 subscript (resourceValueFor key: String) -> AnyObject? {
-	get throws
-	set throws
+    get throws
+    set throws
 }
 ```
 
@@ -618,17 +620,17 @@ There are several reasons not to do this:
 var resourceValues: ResourceValues { get } 
 
 struct ResourceValues {
-	subscript (key: String) -> AnyObject? {
-		get throws { ... }
-		set throws { ... }
-	}
-	
-	func get(for keys: [String]) throws -> [String: AnyObject] { ... }
-	func set(from dict: [String: AnyObject]) throws { ... }
-	
-	func removeCachedKeys() { ... }
-	func removeCachedKey(_ key: String) { ... }
-	func setTemporaryValue(_ value: AnyObject?, for key: String) { ... }
+    subscript (key: String) -> AnyObject? {
+        get throws { ... }
+        set throws { ... }
+    }
+    
+    func get(for keys: [String]) throws -> [String: AnyObject] { ... }
+    func set(from dict: [String: AnyObject]) throws { ... }
+    
+    func removeCachedKeys() { ... }
+    func removeCachedKey(_ key: String) { ... }
+    func setTemporaryValue(_ value: AnyObject?, for key: String) { ... }
 }
 ```
 
@@ -712,24 +714,29 @@ Under this proposal, only computed accessors can throw. If you want to
 make a stored property with a throwing accessor, you must wrap it in a 
 computed property:
 
-    var _url: NSURL
-    var url: NSURL {
-        get { return _url }
-        set throws {
-            try newValue.checkResourceIsReachable()
-            _url = newValue
-        }
+
+```swift
+var _url: NSURL
+var url: NSURL {
+    get { return _url }
+    set throws {
+        try newValue.checkResourceIsReachable()
+        _url = newValue
     }
+}
+```
 
 This boilerplate could be avoided by allowing you to specify a throwing 
 `willSet` observer. The presence of a `willSet throws` observer would 
 imply that the setter itself is `throws`.
 
-    var url: NSURL {
-        willSet throws {
-          try newValue.checkResourceIsReachable()
-        }
+```swift
+var url: NSURL {
+    willSet throws {
+      try newValue.checkResourceIsReachable()
     }
+}
+```
 
 Additionally, `didSet` could support this feature, though that would be 
 mistake-prone since the assignment would have already been performed.
@@ -772,15 +779,15 @@ a possible design:
   // The `rethrows` keyword indicates that some conforming types may 
   // make all members throw.
   protocol GeneratorType rethrows {
-    associatedtype Element
-    // There is no explicit indication on the individual members.
-    mutating func next() -> Element?
+      associatedtype Element
+      // There is no explicit indication on the individual members.
+      mutating func next() -> Element?
   }
   protocol SequenceType rethrows {
-    // Without a `rethrows` here, all SequenceType.Generators would 
-    // have to be non-throwing.
-    associatedtype Generator: GeneratorType rethrows
-    // Other members omitted; you get the idea.
+      // Without a `rethrows` here, all SequenceType.Generators would 
+      // have to be non-throwing.
+      associatedtype Generator: GeneratorType rethrows
+      // Other members omitted; you get the idea.
   }
   ```
 
@@ -788,11 +795,11 @@ a possible design:
   
   ```swift
   class PreparedQuery: SequenceType throws {
-    // In a concrete type with a throwing conformance, the members 
-    // are explicitly marked as `throws`.
-    func generate() throws -> ResultGenerator {
-      return try ResultGenerator(query: self)
-    }
+      // In a concrete type with a throwing conformance, the members 
+      // are explicitly marked as `throws`.
+      func generate() throws -> ResultGenerator {
+          return try ResultGenerator(query: self)
+      }
   }
   ```
 
@@ -805,8 +812,8 @@ a possible design:
   let names = try query.map { record in try record["name"]! }
   
   func names<Records: SequenceType rethrows where Records.Generator.Element == Record>
-    (from records: Records) throws -> [String] {
-    return records.map { record in try record["name"]! }
+      (from records: Records) throws -> [String] {
+      return records.map { record in try record["name"]! }
   }
   ```
 
