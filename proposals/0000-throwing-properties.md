@@ -760,8 +760,7 @@ unfortunate that types which need to throw are locked out.
 
 This problem could be solved with a mechanism that allowed a particular 
 conforming type to say that *all* of the requirements of the protocol 
-can throw. With throwing getters and setters in place, all members of a 
-type would be able to be declared `throws`, which enables this solution.
+can throw.
 
 To give you an idea of what I'm talking about, here's a brief sketch of 
 a possible design:
@@ -824,4 +823,9 @@ a possible design:
 There are several possible designs in this space, so any proposal along 
 these lines might differ in its details, but I hope you understand what 
 I'm getting at here.
+
+The important point in sketching this idea is that it is only possible 
+if *all* members of a protocol can throw. If (as suggested in the 
+"Alternatives considered" section) getters could not throw, this 
+feature would not be able to work.
     
