@@ -19,32 +19,40 @@ Swift-evolution threads: [Proposal: Allow Getters and Setters to Throw](https://
 
 Sometimes, something that is genuinely getter- or setter-like needs to 
 be able to throw an error. This is particularly common with properties
-which convert between formats:
-
-```swift
-var image: UIImage
-
-var imageData: NSData {
-    get {
-        return UIImagePNGRepresentation(image)
-    }
-    set {
-        guard let newImage = UIImage(data: newValue) else {
-            /* can't */ throw MyError.InvalidImage
-        }
-        image = newImage
-    }
-}
-```
-
-Or which access some external resource which may not be able to perform 
-the operation:
+which access an external resource which may not be in the right state 
+to return the data:
 
 ```swift
 var avatar: UIImage {
     get {
-        let data = /* can't */ try NSData(contentsOfURL: avatarURL, options: [])
-        return UIImage(data: data)
+        guard image = UIImage(contentsOfFile: avatarURL) else {
+            /* can't */ throw MyError.InvalidImage
+        }
+        return image
+    }
+}
+```
+
+Or which convert between formats:
+
+```swift
+var json: [String: JSONValue] {
+    get {
+        return [
+            "username": username,
+            "posts": /* can't */ try posts.map { $0.json }
+        ]
+    }
+    set {
+        guard let newUsername = newValue["username"] as? String else {
+            /* can't */ throw MyError.InvalidUserField("username")
+        }
+        guard let newPostsJSON = newValue["posts"] as? [Post.JSONRepresentation] else {
+            /* can't */ throw MyError.InvalidUserField("posts")
+        }
+        
+        posts = /* can't */ try newPostsJSON.map { Post(json: $0) }
+        username = newUsername
     }
 }
 ```
