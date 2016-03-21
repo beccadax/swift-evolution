@@ -354,8 +354,6 @@ Grammar productions related to the `get`, `set`, and `willSet` accessors:
 > 
 >‌ setter-clause -> *attributes(opt)* **set** *setter-name(opt)* *code-block*
 >
-> willSet-clause -> *attributes(opt)* **willSet** *setter-name(opt)* *code-block*
-> 
 > getter-keyword-clause -> *attributes(opt)* **get**
 >
 >‌ setter-keyword-clause -> *attributes(opt)* **set**
@@ -369,8 +367,6 @@ keyword:
 > 
 >‌ setter-clause -> *attributes(opt)* **set** *setter-name(opt)* *accessor-throwing-keyword(opt)* *code-block*
 >
-> willSet-clause -> *attributes(opt)* **willSet** *setter-name(opt)* *accessor-throwing-keyword(opt)* *code-block*
-> 
 > getter-keyword-clause -> *attributes(opt)* **get** *accessor-throwing-keyword(opt)*
 >
 >‌ setter-keyword-clause -> *attributes(opt)* **set** *accessor-throwing-keyword(opt)*
