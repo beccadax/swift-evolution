@@ -211,71 +211,74 @@ try demo.writeThrow += 1
 try demo.bothThrow += 1
 ```
 
-### Importing throwing property accessors from Objective-C
+### Objective-C bridging
 
-When a readonly property `foo` of type `T` is imported from Objective-C,
-but a method like this exists on the same type:
+Throwing accessors in Swift are represented in Objective-C as methods 
+with certain signatures. These transformations are applied to both 
+protocols and classes.
+
+Properties are bridged by default with names generated from the 
+property name. You can disable bridging by marking the accessor with 
+`@nonobjc`, or change the name with `@objc(name)`.
+
+Subscripts are not bridged by default. You can explicitly ask for a 
+Swift subscript accessor to be exported by specifying a name with the 
+`@objc(name)` format.
+
+If If [SE-0044 Import as member](https://github.com/apple/swift-evolution/blob/master/proposals/0044-import-as-member.md) 
+is accepted, the `swift_name` property should be able to control how 
+methods (and functions) with appropriate signatures will be imported to 
+Swift as throwing property accessors. If it is extended to support 
+subscripts, this support may be extended to throwing subscript 
+accessors, too.
+
+#### Bridging of throwing setters
+
+A throwing setter for a property named `foo` of type `T` is represented 
+in Objective-C as:
 
 ```objc
 - (BOOL)setFoo:(T)value error:(NSError**)error;
 ```
 
-Swift will import `foo` as a readwrite property with a throwing setter.
-
-If [SE-0044 Import as member](https://github.com/apple/swift-evolution/blob/master/proposals/0044-import-as-member.md)
-is accepted, we should also be able to apply the `swift_name` attribute 
-to methods of these forms to create properties with throwing getters:
+A throwing setter for a subscript with an index of type `I` is 
+represented in Objective-C as a method of the form:
 
 ```objc
-- (nullable T)foo:(NSError**)error;    // imported as `T`, not `T?`
-- (BOOL)getFoo:(T*)outValue error:(NSError**)error;
+- (BOOL)setFoo:(T)value atIndex:(I)index error:(NSError**)error;
 ```
 
-No imports for throwing subscript accessors are specified.
+When a non-throwing setter is paired with a throwing getter, it is 
+represented as a method like the above, but with a `void` return and no 
+`error` parameter.
 
-These transformations should be applied to both classes and protocols.
+#### Bridging of throwing getters
 
-### Exporting throwing property and subscript accessors to Objective-C
-
-A throwing setter for a property `foo` of type `T` should be exposed to
-Objective-C as:
-
-```objc
-- (void)setFoo:(T)value error:(NSError**)error;
-```
-
-A throwing getter for a property `foo` of type `T`, where `T` is not 
-optional but its Objective-C equivalent can be nullable, should be 
-exposed to Objective-C as:
+A throwing getter for a property named `foo` of type `T` is represented 
+in Objective-C in one of two ways. If `T` is not optional, but its 
+Objective-C equivalent is nullable, it is represented as:
 
 ```objc
 - (nullable T)foo:(NSError**)error;
 ```
 
-Otherwise, the getter should be exposed as:
+Otherwise, it is represented as:
 
 ```objc
 - (BOOL)getFoo:(appropriate_nullability T*)outValue error:(NSError**)error;
 ```
 
-The `@objc(name)` attribute can be used to change these names.
-
-Throwing accessors for subscripts are not exposed to Objective-C by 
-default, but you can request this be done by applying the `@objc(name)` 
-attribute to the accessor in question. The name is required, and it 
-must have an appropriate number of selector pieces for the number of 
-parameters. The resulting methods will have signatures analogous to 
-those for throwing property accessors, but with a parameter for each 
-index inserted before the `error` parameter, along the lines of:
+A throwing setter for a subscript with an index of type `I` is 
+represented in Objective-C analogously:
 
 ```objc
-- (BOOL)setFoo:(T)value atIndex:(I)index error:(NSError**)error;
 - (nullable T)fooAtIndex:(I)index error:(NSError**)error;
 - (BOOL)getFoo:(appropriate_nullability T*)outValue atIndex:(I)index error:(NSError**)error;
 ```
 
-These transformations should be applied to both classes and `@objc` 
-protocols.
+When a non-throwing getter is paired with a throwing setter, it is 
+represented as though there were no setter (i.e. as a readonly property 
+or an Objective-C subscript method).
 
 ## Detailed design
 
