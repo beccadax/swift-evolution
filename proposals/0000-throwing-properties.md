@@ -255,34 +255,24 @@ Objective-C as:
 Otherwise, the getter should be exposed as:
 
 ```objc
-- (BOOL)getFoo:(nonnull T*)outValue error:(NSError**)error;
+- (BOOL)getFoo:(appropriate_nullability T*)outValue error:(NSError**)error;
 ```
 
-A throwing setter for a subscript of type `T` with an index of type 
-`I`, if marked with `@objc(name)`, should be compatible with this 
-signature:
+The `@objc(name)` attribute can be used to change these names.
+
+Throwing accessors for subscripts are not exposed to Objective-C by 
+default, but you can request this be done by applying the `@objc(name)` 
+attribute to the accessor in question. The name is required, and it 
+must have an appropriate number of selector pieces for the number of 
+parameters. The resulting methods will have signatures analogous to 
+those for throwing property accessors, but with a parameter for each 
+index inserted before the `error` parameter, along the lines of:
 
 ```objc
 - (BOOL)setFoo:(T)value atIndex:(I)index error:(NSError**)error;
-```
-
-A throwing getter for a subscript of type `T` with index `I`, where 
-`T` is not optional but can be nullable in Objective-C, should be 
-compatible with this signature:
-
-```objc
 - (nullable T)fooAtIndex:(I)index error:(NSError**)error;
+- (BOOL)getFoo:(appropriate_nullability T*)outValue atIndex:(I)index error:(NSError**)error;
 ```
-
-Otherwise, the getter should be have a name compatible with this 
-signature:
-
-```objc
-- (BOOL)getFoo:(nonnull T*)outValue atIndex:(I)index error:(NSError**)error;
-```
-
-Throwing subscript accessors which are not marked with `@objc(name)` 
-will not be exposed to Objective-C.
 
 These transformations should be applied to both classes and `@objc` protocols.
 
