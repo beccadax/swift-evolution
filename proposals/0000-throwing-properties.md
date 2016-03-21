@@ -511,7 +511,7 @@ I disagree with him on several grounds:
 * I believe there is value in ensuring that all entities which can run 
   arbitrary code can be made to throw. As one example among many, this 
   might make it possible to add a sort of "generic rethrowing" facility 
-  which would allow you to make a throwing subtype of a normally 
+  which would allow you to make a throwing variant of a normally 
   non-throwing protocol. See the "Future directions" section for 
   details.
   
