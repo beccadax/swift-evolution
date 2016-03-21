@@ -227,7 +227,7 @@ is accepted, we should also be able to apply the `swift_name` attribute
 to methods of these forms to create properties with throwing getters:
 
 ```objc
-- (nullable T)foo:(NSError**)error;    // property is not optional
+- (nullable T)foo:(NSError**)error;    // imported as `T`, not `T?`
 - (BOOL)getFoo:(T*)outValue error:(NSError**)error;
 ```
 
@@ -245,8 +245,8 @@ Objective-C as:
 ```
 
 A throwing getter for a property `foo` of type `T`, where `T` is not 
-optional but can be nullable in Objective-C, should be exposed to 
-Objective-C as:
+optional but its Objective-C equivalent can be nullable, should be 
+exposed to Objective-C as:
 
 ```objc
 - (nullable T)foo:(NSError**)error;
@@ -274,7 +274,8 @@ index inserted before the `error` parameter, along the lines of:
 - (BOOL)getFoo:(appropriate_nullability T*)outValue atIndex:(I)index error:(NSError**)error;
 ```
 
-These transformations should be applied to both classes and `@objc` protocols.
+These transformations should be applied to both classes and `@objc` 
+protocols.
 
 ## Detailed design
 
