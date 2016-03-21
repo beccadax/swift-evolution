@@ -348,7 +348,7 @@ class Subclass: Superclass {
 (This section is based on *The Swift Programming Language*'s grammar 
 summary, not anything in the compiler source code.)
 
-Grammar productions related to the `get`, `set`, and `willSet` accessors:
+Grammar productions related to the `get` and `set` accessors:
 
 > getter-clause -> *attributes(opt)* `get` *code-block*
 > 
