@@ -29,7 +29,10 @@ var imageData: NSData {
         return UIImagePNGRepresentation(image)
     }
     set {
-        image = UIImage(data: newValue) ?? /* can't */ throw MyError.InvalidImage
+        guard let newImage = UIImage(data: newValue) else {
+            /* can't */ throw MyError.InvalidImage
+        }
+        image = newImage
     }
 }
 ```
