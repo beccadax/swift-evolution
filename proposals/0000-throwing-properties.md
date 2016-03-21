@@ -29,7 +29,7 @@ var imageData: NSData {
         return UIImagePNGRepresentation(image)
     }
     set {
-        image = UIImage(data: newValue) ?? throw OopsICantThrowHere
+        image = UIImage(data: newValue) ?? /* can't */ throw MyError.InvalidImage
     }
 }
 ```
@@ -40,7 +40,7 @@ the operation:
 ```swift
 var avatar: UIImage {
     get {
-        let data = try NSData(contentsOfURL: avatarURL, options: [])  /* can't try here! */
+        let data = /* can't */ try NSData(contentsOfURL: avatarURL, options: [])
         return UIImage(data: data)
     }
 }
