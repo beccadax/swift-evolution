@@ -545,14 +545,32 @@ they're highly controversial.
 
 ### Require setters to be at least as throwing as getters
 
-Calling a setter often implicitly involves calling a getter, so it may 
-make sense to require the setter to be at least as throwing as the 
-getter. Absent feedback to this effect from implementors, however, my 
-instinct is to leave them independent, as there may be use cases where 
-a get can throw but a set cannot. (For instance, if an instance faults 
-in data from an external source on demand, but only writes that data 
-back when a `save()` call is invoked, `get` may throw if it's unable to 
-fault in the data, but `set` would never need to throw.)
+We could require the setter to be at least as throwing as the getter, 
+i.e., combinations like `get throws set` or `get throws set rethrows` 
+would be illegal. This may simplify certain use sites.
+
+The current rule is that you must use `try` if any of the accessors 
+used for that access can throw. But it may be slightly tricky for 
+users to figure out whether an expression uses only the setter or both 
+the setter and getter. With a `get throws set` combination, the former 
+cases would not require a `try`, but the latter would:
+  
+```swift
+getThrows = value           // no try
+try getThrows += value      // needs try
+```
+
+Moreover, my understanding (which may be incorrect) is that Swift 
+sometimes makes counterintuitive accessor choices, fetching existing 
+values even where the code does not obviously require it. If so, this 
+might mean that the code either has to demand `try` keywords in 
+unexpected locations or implicitly insert them, changing behavior.
+
+While there are some minor use cases for `get throws set`, they're 
+somewhat of a stretch, and we could probably do without them.
+
+I have chosen the design with maximum flexibility, but other people 
+might weigh these factors differently.
 
 ### Make `rethrows` setters throwing if `newValue` is throwing
 
