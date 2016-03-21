@@ -123,7 +123,7 @@ func setResourceValue(_ value: AnyObject?, forKey key: String) throws
 Swift can handle these cases better by allowing getters and setters to
 throw.
 
-### Throwing computed properties
+### Declaring throwing accessors
 
 You can mark a computed property accessor as throwing by putting 
 `throws` after the `get` or `set` keyword:
@@ -164,6 +164,51 @@ protocol MyProtocol {
     var property: Int { get throws set throws }
     subscript(index: Int) -> Bool { get throws set throws }
 }
+```
+
+### Using throwing accessors
+
+Just as you would with a throwing function or initializer, any 
+expression which invokes a throwing accessor must be marked with the 
+`try` keyword. For instance, with this type:
+
+```swift
+struct ThrowingDemo {
+    var noThrow: Int { get {...} set {...} }
+    var readThrow: Int { get throws {...} set {...} }
+    var writeThrow: Int { get {...} set throws {...} }
+    var bothThrow: Int { get throws {...} set throws {...} }
+}
+var demo = ThrowingDemo()
+```
+
+The following uses require a `try`:
+
+```swift
+_ = try demo.readThrow
+try demo.writeThrow = 1
+_ = try demo.bothThrow
+try demo.bothThrow = 1
+```
+
+But these do not:
+
+```swift
+_ = demo.noThrow
+demo.noThrow = 1
+demo.readThrow = 1
+_ = demo.writeThrow
+```
+
+Uses which simultaneously read and write, such as `inout` parameters, 
+in-place operators, and use of `mutating` members, require a `try` if 
+either accessor throws.
+
+```swift
+demo.noThrow += 1
+try demo.readThrow += 1
+try demo.writeThrow += 1
+try demo.bothThrow += 1
 ```
 
 ### Importing throwing property accessors from Objective-C
