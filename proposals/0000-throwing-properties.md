@@ -350,26 +350,26 @@ summary, not anything in the compiler source code.)
 
 Grammar productions related to the `get`, `set`, and `willSet` accessors:
 
-> getter-clause -> *attributes(opt)* **get** *code-block*
+> getter-clause -> *attributes(opt)* `get` *code-block*
 > 
->‌ setter-clause -> *attributes(opt)* **set** *setter-name(opt)* *code-block*
+>‌ setter-clause -> *attributes(opt)* `set` *setter-name(opt)* *code-block*
 >
-> getter-keyword-clause -> *attributes(opt)* **get**
+> getter-keyword-clause -> *attributes(opt)* `get`
 >
->‌ setter-keyword-clause -> *attributes(opt)* **set**
+>‌ setter-keyword-clause -> *attributes(opt)* `set`
 
 Will need to be changed to accommodate a `throws` or `rethrows` 
 keyword:
 
-> accessor-throwing-keyword -> **throws** | **rethrows**
+> accessor-throwing-keyword -> `throws` | `rethrows`
 > 
-> getter-clause -> *attributes(opt)* **get** *accessor-throwing-keyword(opt)* *code-block*
+> getter-clause -> *attributes(opt)* `get` *accessor-throwing-keyword(opt)* *code-block*
 > 
->‌ setter-clause -> *attributes(opt)* **set** *setter-name(opt)* *accessor-throwing-keyword(opt)* *code-block*
+>‌ setter-clause -> *attributes(opt)* `set` *setter-name(opt)* *accessor-throwing-keyword(opt)* *code-block*
 >
-> getter-keyword-clause -> *attributes(opt)* **get** *accessor-throwing-keyword(opt)*
+> getter-keyword-clause -> *attributes(opt)* `get` *accessor-throwing-keyword(opt)*
 >
->‌ setter-keyword-clause -> *attributes(opt)* **set** *accessor-throwing-keyword(opt)*
+>‌ setter-keyword-clause -> *attributes(opt)* `set` *accessor-throwing-keyword(opt)*
 
 `rethrows` would not be valid inside a property declaration, only a 
 subscript declaration, but I think that discovering that issue during 
