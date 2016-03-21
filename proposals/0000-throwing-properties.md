@@ -308,7 +308,7 @@ intended to satisfy. That is:
 
 * A throwing accessor requirement can be fulfilled by a throwing, 
   rethrowing, or non-throwing accessor.
-* A rethrowing accessor requirement can be fulfilled by a rethrowing
+* A rethrowing accessor requirement can be fulfilled by a rethrowing 
   or non-throwing accessor.
 * A non-throwing accessor requirement can be fulfilled only by a 
   non-throwing accessor.
