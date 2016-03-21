@@ -774,15 +774,15 @@ way that all of its members can throw errors, there is no way for that
 type to conform.
 
 For example, consider a database library's `PreparedQuery` type. This 
-type is, in most respects, a shoe-in for `SequenceType` conformance, 
-which would allow you to loop over the records matching the query. 
-However, unlike other `SequenceType`s, any of `PreparedQuery`'s 
-operations might throw an error: the process may lose its connection to 
-the database server. It doesn't make sense to change `SequenceType` so 
-that its requirements are marked as `throws`—the vast majority of 
-`SequenceType`s never throw, so it would be burdensome to always permit 
-throwing just for the very few types which need it—but it's also 
-unfortunate that types which need to throw are locked out.
+type is, in most respects, a shoe-in for `Sequence` conformance, which 
+would allow you to loop over the records matching the query. However, 
+unlike other `Sequence`s, any of `PreparedQuery`'s operations might 
+throw an error: the process may lose its connection to the database 
+server. It doesn't make sense to change `Sequence` so that its 
+requirements are marked as `throws`—the vast majority of `Sequence`s 
+never throw, so it would be burdensome to always permit throwing just 
+for the very few types which need it—but it's also unfortunate that 
+types which need to throw are locked out.
 
 This problem could be solved with a mechanism that allowed a particular 
 conforming type to say that *all* of the requirements of the protocol 
@@ -797,15 +797,15 @@ a possible design:
   ```swift
   // The `rethrows` keyword indicates that some conforming types may 
   // make all members throw.
-  protocol GeneratorType rethrows {
+  protocol IteratorProtocol rethrows {
       associatedtype Element
       // There is no explicit indication on the individual members.
       mutating func next() -> Element?
   }
-  protocol SequenceType rethrows {
+  protocol Sequence rethrows {
       // Without a `rethrows` here, all SequenceType.Generators would 
       // have to be non-throwing.
-      associatedtype Generator: GeneratorType rethrows
+      associatedtype Iterator: IteratorProtocol rethrows
       // Other members omitted; you get the idea.
   }
   ```
@@ -813,11 +813,11 @@ a possible design:
 * A conforming type which wants to throw marks its conformance:
   
   ```swift
-  class PreparedQuery: SequenceType throws {
+  class PreparedQuery: Sequence throws {
       // In a concrete type with a throwing conformance, the members 
       // are explicitly marked as `throws`.
-      func generate() throws -> ResultGenerator {
-          return try ResultGenerator(query: self)
+      func makeIterator() throws -> ResultIterator {
+          return try ResultIterator(query: self)
       }
   }
   ```
@@ -830,7 +830,7 @@ a possible design:
   let query = database.makeQuery("SELECT name FROM users")
   let names = try query.map { record in try record["name"]! }
   
-  func names<Records: SequenceType rethrows where Records.Generator.Element == Record>
+  func names<Records: Sequence rethrows where Records.Iterator.Element == Record>
       (from records: Records) throws -> [String] {
       return records.map { record in try record["name"]! }
   }
@@ -841,7 +841,7 @@ a possible design:
   throwing conformances.
   
   ```swift
-  func countElements<Sequence: SequenceType rethrows>(_ seq: Sequence) rethrows -> Int {
+  func countElements<Seq: Sequence rethrows>(_ seq: Seq) rethrows -> Int {
       return try seq.reduce(0) { $0 + 1 }
   }
   ```
