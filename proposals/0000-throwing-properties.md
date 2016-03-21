@@ -223,7 +223,7 @@ property name. You can disable bridging by marking the accessor with
 
 Subscripts are not bridged by default. You can explicitly ask for a 
 Swift subscript accessor to be exported by specifying a name with the 
-`@objc(name)` format.
+`@objc(name)` format. A plain `@objc` is not permitted.
 
 If If [SE-0044 Import as member](https://github.com/apple/swift-evolution/blob/master/proposals/0044-import-as-member.md) 
 is accepted, the `swift_name` property should be able to control how 
