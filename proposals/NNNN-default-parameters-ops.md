@@ -74,8 +74,9 @@ which benefit from capturing call site information.
 The recent [SE-0217][bangbang] proposed such an operator, and enthusiasm
 for the proposal was substantially dampened by its inability to capture call-site
 information. Whether or not that operator belongs in the standard library, Swift
-users who want to implement it themselves should be able to use a fully-featured
-version of it, and can't without this minor language change.
+users who want to implement it—or others like it—themselves should be able
+to use a fully-featured version of it. They can't without this minor language
+change.
 
   [bangbang]: https://github.com/apple/swift-evolution/blob/master/proposals/0217-bangbang.md
 
