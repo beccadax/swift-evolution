@@ -134,10 +134,10 @@ much like subscript parameters. These labels are only used when specifying
 non-default arguments for the parameters using the function-style syntax.
 
 Users will not be restricted to only using the magic identifiers as default
-values—they can specify any expression that would be valid in an operator's
-default values. We don't think this will actually be useful, but we don't
-think preventing it is worth complicating the compiler. If someone comes up
-with a way to use it, more power to them.
+values—they can specify any expression that would be valid in a function
+parameter's default value. We don't think this will actually be useful, but we
+don't think preventing it is worth complicating the compiler. If someone comes
+up with a way to use it, more power to them.
 
 ### Implementation
 
