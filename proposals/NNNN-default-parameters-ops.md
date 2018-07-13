@@ -25,8 +25,8 @@ object file the caller resides in.
 
 This is made slightly more complicated because some functions need to
 call these functions, but emit an error as though *their* caller had
-called them. For example, an analytics package might wrap `Swift.assert`
-with extra logging, then call 
+called them. For example, an analytics package might add a message
+to its log, then call through to `Swift.assert`.
 
 Many languages build heavyweight runtime-based call stack introspection
 features to allow this. In contrast, Swift uses an elegant mechanism which
