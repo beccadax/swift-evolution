@@ -93,7 +93,7 @@ operator ++= : AssignmentPrecedence
 /// Appends to an NSAttributedString, annotating it with debug attributes
 /// describing where in the code the appending was done.
 func ++= (lhs: NSMutableAttributedString, rhs: NSAttributedString,
-          file: String = #file, line: Int = #line) {
+          file file: String = #file, line line: Int = #line) {
   let startIndex = lhs.length
   lhs.append(rhs)
   lhs.addAttributes([.debugSourceFile: file, .debugSourceLine: line],
@@ -114,7 +114,7 @@ could use the existing function-style operator syntax:
 ```swift
 extension CodeTemplate {
   func append(to allCode: NSMutableAttributedString,
-              file file: String = #file, line line: Int = #line) {
+              file: String = #file, line: Int = #line) {
     (++=)(allCode, makeCode(), file: file, line: line)
   }
 }
